@@ -28,7 +28,17 @@ exports.register = async (req, res) => {
 
     await user.save();
 
-    res.status(201).json({ message: "User registered successfully" });
+    // Generate JWT token after successful registration
+    const token = jwt.sign(
+      { userId: user._id, email: user.email },
+      process.env.JWT_SECRET,
+      { expiresIn: "1h" } // Token expires in 1 hour
+    );
+
+    res.status(201).json({
+      message: "User registered successfully",
+      token,
+    });
   } catch (err) {
     console.error(err);
     if (err.name === "ZodError") {
@@ -72,5 +82,15 @@ exports.login = async (req, res) => {
     });
   } catch (error) {
     res.status(400).json({ message: "Validation failed", error: error.errors });
+  }
+};
+
+exports.getCurrentUser = async (req, res) => {
+  try {
+    const user = await User.findById(req.userId).select('-password');
+    if (!user) return res.status(404).json({ message: 'User not found' });
+    res.json(user);
+  } catch (err) {
+    res.status(500).json({ message: 'Server error' });
   }
 };
