@@ -8,6 +8,7 @@ const registerSchema = z.object({
   age: z.string().refine((val) => !isNaN(Number(val)) && Number(val) >= 60),
   hobbies: z.string().min(3),
   about: z.string().optional(),
+  address: z.string().min(3),
   preferredCommunication: z.array(z.string()).min(1),
 }).refine((data) => data.password === data.confirmPassword, {
   message: "Passwords do not match",

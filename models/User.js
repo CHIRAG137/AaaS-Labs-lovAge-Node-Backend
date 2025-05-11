@@ -8,6 +8,7 @@ const userSchema = new mongoose.Schema({
   age: Number,
   hobbies: String,
   about: String,
+  address: String,
   preferredCommunication: [String],
 }, { timestamps: true });
 

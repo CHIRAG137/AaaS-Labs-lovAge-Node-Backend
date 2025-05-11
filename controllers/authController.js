@@ -22,6 +22,7 @@ exports.register = async (req, res) => {
       age: Number(validated.age),
       hobbies: validated.hobbies,
       about: validated.about,
+      address: validated.address,
       preferredCommunication: validated.preferredCommunication,
     });
 
