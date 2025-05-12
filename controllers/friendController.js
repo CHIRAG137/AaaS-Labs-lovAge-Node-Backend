@@ -109,3 +109,38 @@ exports.declineFriendRequest = async (req, res) => {
     res.status(500).json({ error: "Server error" });
   }
 };
+
+// Controller to get friends
+exports.getFriends = async (req, res) => {
+    try {
+      const user = await User.findById(req.params.userId).populate('requestsFrom.userId').populate('sentRequestsTo.userId');
+      const friends = [];
+  
+      user.requestsFrom.forEach(request => {
+        if (request.status === 'accepted') {
+          friends.push(request.userId);
+        }
+      });
+  
+      user.sentRequestsTo.forEach(request => {
+        if (request.status === 'accepted') {
+          friends.push(request.userId);
+        }
+      });
+  
+      res.status(200).json(friends); // Respond with a list of accepted friends
+    } catch (error) {
+      res.status(500).json({ message: error.message });
+    }
+  };
+  
+  // Controller to get friend requests (sent requests with status 'sent')
+  exports.getFriendRequests = async (req, res) => {
+    try {
+      const user = await User.findById(req.params.userId).populate('requestsFrom.userId');
+      const requests = user.requestsFrom.filter(request => request.status === 'sent');
+      res.status(200).json(requests.map(request => request.userId)); // Respond with users who have pending requests
+    } catch (error) {
+      res.status(500).json({ message: error.message });
+    }
+  };
